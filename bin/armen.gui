@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+#######
+##                                           _
+##   ___ _______ _  ___ ___       ___ ___ __(_)
+##  / _ `/ __/  ' \/ -_) _ \  _  / _ `/ // / /
+##  \_,_/_/ /_/_/_/\__/_//_/ (_) \_, /\_,_/_/
+##                              /___/
+##
+####### Ecosystème basé sur les microservices ##################### (c) 2018 losyme ####### @(°_°)@
+
+use Exclus::Exclus;
+use Getopt::Long qw(Configure GetOptions);
+use Utopie::Process;
+
+#md_## Les méthodes
+#md_
+
+#md_### _get_attributes()
+#md_
+sub _get_attributes {
+    my $attributes = {};
+    my $handler = sub { $attributes->{$_[0]} = $_[1] };
+    Configure(qw(default pass_through no_auto_abbrev no_ignore_case));
+    GetOptions(
+        "port=i" => $handler
+    );
+    return $attributes;
+}
+
+#md_### _run_process()
+#md_
+sub _run_process {
+    Utopie::Process->new(%{_get_attributes()})->process;
+}
+
+###----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----###
+exit _run_process;
+###----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----###
+
+####### END
