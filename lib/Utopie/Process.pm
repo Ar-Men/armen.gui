@@ -16,11 +16,18 @@ use Exclus::Exclus;
 use EV;
 use AnyEvent;
 use Moo;
-use Types::Standard qw(InstanceOf Int);
+use Path::Tiny;
+use Text::Template;
+use Types::Standard qw(InstanceOf Int Str);
+use YAML::XS qw(LoadFile);
 use Utopie::Components::Server;
 use namespace::clean;
 
 extends qw(Obscur::Runner::Process);
+with qw(
+    Utopie::API::Role::Services
+    Utopie::API::Role::Workers
+);
 
 #md_## Les attributs
 #md_
@@ -28,7 +35,9 @@ extends qw(Obscur::Runner::Process);
 ###----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----###
 has '+name'        => (default => sub { 'Utopie' });
 has '+description' => (default => sub { "L'interface graphique de type web" });
-has '+server'      => (default => sub { Utopie::Components::Server->new(runner => $_[0], cfg => {}) });
+has '+server'      => (default => sub {
+    Utopie::Components::Server->new(runner => $_[0], cfg => {debug => $_[0]->config->get_bool('debug')})
+});
 ###----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----###
 
 #md_### port
@@ -43,8 +52,33 @@ has '_cv_stop' => (
     is => 'ro', isa => InstanceOf['AnyEvent::CondVar'], default => sub { AE::cv }, init_arg => undef
 );
 
+#md_### _templates
+#md_
+has '_templates' => (
+    is => 'ro',
+    isa => InstanceOf['Path::Tiny'],
+    lazy => 1,
+    default => sub { $_[0]->dir->child('gui/templates') },
+    init_arg => undef
+);
+
+#md_### version
+#md_
+has 'version' => (
+    is => 'lazy', isa => Str, init_arg => undef
+);
+
 #md_## Les méthodes
 #md_
+
+#md_### _build_version()
+#md_
+sub _build_version {
+    my $self = shift;
+    my $data = LoadFile($self->dir->child('Version.yaml'));
+    return
+        exists $data->{version} ? $data->{version} : '0.0.0';
+}
 
 #md_### _stop_loop()
 #md_
@@ -61,26 +95,6 @@ sub _start_loop {
     $self->_cv_stop->recv;
 }
 
-#md_### _get_status()
-#md_
-sub _get_status {
-    my ($self, $respond, $rr) = @_;
-    $rr->payload({
-        id          => $self->id,
-        name        => $self->name,
-        description => $self->description,
-        node        => $self->node_name
-    });
-    $respond->($rr->auto_render->finalize);
-}
-
-#md_### _API()
-#md_
-sub _API {
-    my ($self) = @_;
-    $self->server->get('/v:version/status', sub { $self->_get_status(@_) });
-}
-
 #md_### run()
 #md_
 sub run {
@@ -90,6 +104,17 @@ sub run {
     $self->info('READY.process', [description => $self->description]);
     $self->_start_loop;
 }
+
+#md_### build_template()
+#md_
+sub build_template {
+    my ($self, $template) = @_;
+    return Text::Template->new(DELIMITERS => ['[%', '%]'], SOURCE => $self->_templates->child("${template}.html"));
+}
+
+#md_### _API()
+#md_
+sub _API { $_[0]->$_ foreach map { "API_$_" } qw(services workers) }
 
 1;
 __END__

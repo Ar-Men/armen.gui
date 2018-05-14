@@ -4,16 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ar-Men - Utopie</title>
-    <link rel="icon" type="image/png" href="/armen.png" />
+    <link rel="icon" type="image/png" href="/static/armen.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
-    <link rel="stylesheet" href="/css/app.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+    <link rel="stylesheet" href="/static/css/app.css">
+    <script src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.2.1.min.js"></script>
+    <script src='/static/js/app.js'></script>
 </head>
 <body>
     <nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item" href="/index.html">
+                <a class="navbar-item" href="/">
                     <span class="has-text-weight-semibold is-size-4">Utopie</span>
                 </a>
                 <a role="button" class="navbar-burger" data-target="dtNavMenu" aria-label="menu" aria-expanded="false">
@@ -24,13 +27,13 @@
             </div>
             <div id="dtNavMenu" class="navbar-menu">
                 <div class="navbar-start">
-                    <a class="navbar-item" href="#services">
+                    <a class="navbar-item [% $menu eq 'S' ? 'is-active' : '' %]" href="/services">
                         <span class="icon has-text-primary">
                             <i class="fas fa-server" aria-hidden="true"></i>
                         </span>
                         <span>Services</span>
                     </a>
-                    <a class="navbar-item" href="#workers">
+                    <a class="navbar-item [% $menu eq 'W' ? 'is-active' : '' %]" href="/workers">
                         <span class="icon has-text-primary">
                             <i class="fas fa-cogs" aria-hidden="true"></i>
                         </span>
@@ -38,30 +41,20 @@
                     </a>
                 </div>
                 <div class="navbar-end">
-                    <a class="navbar-item" href="#login">
-                        <span class="icon has-text-primary">
-                            <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
-                        </span>
-                        <span>Connexion</span>
-                    </a>
+                    <span class="navbar-item">TODO</span>
                 </div>
             </div>
         </div>
     </nav>
     <div class="section main">
         <div class="container">
-            <main></main>
+            <h1 class="title is-4">[% $title %]</h1>
+            <div id="content"></div>
         </div>
     </div>
     <footer class="footer">
-        <div class="level">
-            <p class="level-item has-text-centered is-size-7">
-                <span>Utopie v0.1.0</span>
-                <a class="button is-small armen" href="https://github.com/Ar-Men">Ar-Men</a>
-                <span>© 2017 losyme</span>
-            </p>
-        </div>
+        <p class="has-text-centered">Utopie v[% $version %] © 2018 losyme</p>
+        <p class="has-text-centered">Ar-Men</p>
     </footer>
-    <script src='/js/app.js'></script>
 </body>
 </html>

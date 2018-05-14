@@ -9,16 +9,12 @@
 ####### Ecosystème basé sur les microservices ##################### (c) 2018 losyme ####### @(°_°)@
 */
 
+.navbar .navbar-start > a.navbar-item.is-active {
+    background-color: hsl(0, 0%, 92%)
+}
+
 span.icon {
     margin-right: 5px;
-}
-
-.section.main {
-    background-color: hsl(0, 0%, 96%);
-}
-
-a.armen {
-    margin: 0 10px;
 }
 
 /*
