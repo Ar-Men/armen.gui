@@ -20,6 +20,7 @@ use Path::Tiny;
 use Text::Template;
 use Types::Standard qw(InstanceOf Int Str);
 use YAML::XS qw(LoadFile);
+use Exclus::Exceptions;
 use Utopie::Components::Server;
 use namespace::clean;
 
@@ -105,11 +106,36 @@ sub run {
     $self->_start_loop;
 }
 
+#md_### get_template_path()
+#md_
+sub get_template_path { shift->_templates->child($_[0].'.html') }
+
 #md_### build_template()
 #md_
 sub build_template {
-    my ($self, $template) = @_;
-    return Text::Template->new(DELIMITERS => ['[%', '%]'], SOURCE => $self->_templates->child("${template}.html"));
+    state $_templates = {};
+    my ($self, $template, $data) = @_;
+    $data //= {};
+    unless (exists $_templates->{$template}) {
+        my $tt = Text::Template->new(
+            DELIMITERS => ['[%', '%]'],
+            SOURCE => $self->get_template_path($template)
+        );
+        unless ($tt) {
+            EX->throw({ ##//////////////////////////////////////////////////////////////////////////////////////////////
+                message => "Impossible de construire le template",
+                params  => [template => $template, error => $Text::Template::ERROR]
+            });
+        }
+        $_templates->{$template} = $tt;
+    }
+    my $html = $_templates->{$template}->fill_in(HASH => $data);
+    return $html
+        if $html;
+    EX->throw({ ##//////////////////////////////////////////////////////////////////////////////////////////////////////
+        message => "Impossible de remplir le template",
+        params  => [template => $template, error => $Text::Template::ERROR, data => $data]
+    });
 }
 
 #md_### _API()

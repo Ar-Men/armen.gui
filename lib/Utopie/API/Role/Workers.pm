@@ -24,15 +24,13 @@ requires qw(build_template);
 #md_
 sub _get_workers {
     my ($self, $rr) = @_;
-    state $_template = $self->build_template('root');
     $rr->render(
-        $_template->fill_in(
-            HASH => {
-                title   => 'Les workers',
-                menu    => 'W',
-                version => $self->version
-            }
-        )
+        $self->build_template('main', {
+            menu    => 'W',
+            title   => 'Les workers',
+            version => $self->version,
+            content => $self->build_template('workers')
+        })
     );
 }
 

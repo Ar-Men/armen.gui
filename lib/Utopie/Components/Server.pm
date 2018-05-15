@@ -15,6 +15,7 @@ package Utopie::Components::Server;
 use Exclus::Exclus;
 use Moo;
 use Plack::App::File;
+use Plack::Builder;
 use Try::Tiny;
 use namespace::clean;
 
@@ -39,19 +40,21 @@ sub _psgi_html {
     my $rr = _Utopie::RequestResponse->new(runner => $runner, env => $env, debug => $self->debug);
     my $later;
     try {
-        if (my $match = $self->route_match($env)) {
-            $later = $self->_html_response($rr, @$match);
+        my ($cb, $params, $is_method_not_allowed, $allowed_methods) = $self->route_match($env);
+        if ($cb) {
+            $later = $self->_html_response($rr, $cb, $params);
         }
-        elsif (defined $match) {
-            $rr->render_405;
+        elsif ($is_method_not_allowed || $allowed_methods) {
+            $rr->render_405($allowed_methods);
         }
         else {
             $rr->render_404;
         }
     }
     catch {
-        $self->logger->error("$_");
-        $rr->render_500("$_");
+        my $error = "$_";
+        $self->logger->error($error);
+        $rr->render_500(     $error);
     };
     return $later ? $later : $rr->finalize;
 }
@@ -61,8 +64,11 @@ sub _psgi_html {
 sub build {
     my ($self, $builder) = @_;
     $builder->mount('/static' => Plack::App::File->new(root => $self->runner->dir->child('gui/static'))->to_app);
-    $builder->mount('/'       => sub { $self->_psgi_html(@_) });
+    my $builder_middleware = Plack::Builder->new;
+    $builder_middleware->add_middleware('Plack::Middleware::ContentLength');
+    $builder->mount('/' => $builder_middleware->wrap(sub { $self->_psgi_html(@_) }));
 }
+
 
 package _Utopie::RequestResponse; ######################################################################################
 
@@ -70,8 +76,10 @@ package _Utopie::RequestResponse; ##############################################
 #md_
 
 use Exclus::Exclus;
+use HTML::Entities qw(encode_entities);
 use Moo;
 use Plack::Response;
+use Try::Tiny;
 use Types::Standard qw(Bool HashRef InstanceOf);
 use namespace::clean;
 
@@ -110,9 +118,10 @@ has '_debug' => (
 sub BUILD {
     my $self = shift;
     if ($self->_debug) {
+        my $env = $self->env;
         $self->logger->debug(
             'Request',
-            [server => $self->env->{REMOTE_ADDR}, resource => $self->env->{PATH_INFO}]
+            [server => $env->{REMOTE_ADDR}, method => $env->{REQUEST_METHOD}, resource => $env->{PATH_INFO}]
         );
     }
 }
@@ -123,31 +132,48 @@ sub render {
     my ($self, $content, $status) = @_;
     my $response = $self->_response;
     $response->body($content);
-    $response->content_length(length($content));
     $response->status($status)
         if $status;
+}
+
+#md_### render_error()
+#md_
+sub render_error {
+    my ($self, $status, $message) = @_;
+    my $html;
+    try {
+        $html = $self->runner->get_template_path($status)->slurp;
+        $html =~ s/\$message/$message/g;
+    }
+    catch {
+        $html = "error $status ==>> $message";
+    };
+    $self->render($html, $status);
 }
 
 #md_### render_404()
 #md_
 sub render_404 {
     my ($self) = @_;
-    $self->render('404', 404); #TODO
+    $self->render_error(404, encode_entities(sprintf('Ressource non trouvée> %s', $self->env->{PATH_INFO})));
 }
 
 #md_### render_405()
 #md_
 sub render_405 {
-    my ($self) = @_;
-    $self->render('405', 405); #TODO
+    my ($self, $allowed_methods) = @_;
+    my $message = sprintf(
+        "Cette méthode n'est pas autorisée pour cette ressource> resource: %s, method: %s, allowed methods: [%s]",
+        $self->env->{PATH_INFO},
+        $self->env->{REQUEST_METHOD},
+        join(',', @{$allowed_methods // []})
+    );
+    $self->render_error(405, encode_entities($message));
 }
 
 #md_### render_500()
 #md_
-sub render_500 {
-    my ($self) = @_;
-    $self->render('500', 500); #TODO
-}
+sub render_500 { shift->render_error(500, encode_entities($_[0])) }
 
 #md_### finalize()
 #md_
