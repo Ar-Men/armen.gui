@@ -1,1 +1,16 @@
-<div ic-src="/data/services" ic-trigger-on="load">...</div>
+<div class="tabs is-toggle is-small is-right">
+    <ul>
+        <li class="[% $active eq 'A' ? 'is-active' : '' %]">
+            <a href="/services/available">Available</a>
+        </li>
+        <li class="[% $active eq 'R' ? 'is-active' : '' %]">
+            <a href="/services/registered">Registered</a>
+        </li>
+    </ul>
+</div>
+<div id="spinner" class="level" style="display:none">
+    <div class="level-item has-text-centered">
+        <p class="icon has-text-danger"><i class="fas fa-spinner fa-pulse"></i></p>
+    </div>
+</div>
+<div ic-src="/data/services/[% $data %]" ic-trigger-on="load" ic-indicator="#spinner"></div>

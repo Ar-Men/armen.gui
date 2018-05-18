@@ -117,13 +117,7 @@ has '_debug' => (
 #md_
 sub BUILD {
     my $self = shift;
-    if ($self->_debug) {
-        my $env = $self->env;
-        $self->logger->debug(
-            'Request',
-            [server => $env->{REMOTE_ADDR}, method => $env->{REQUEST_METHOD}, resource => $env->{PATH_INFO}]
-        );
-    }
+    $self->logger->debug('Request', [%{$self->env}]) if $self->_debug;
 }
 
 #md_### render()

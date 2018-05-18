@@ -20,13 +20,13 @@ use Moo::Role;
 
 requires qw(build_template);
 
-#md_### _get_workers()
+#md_### _workers()
 #md_
-sub _get_workers {
+sub _workers {
     my ($self, $rr) = @_;
     $rr->render(
         $self->build_template('main', {
-            menu    => 'W',
+            active  => 'W',
             title   => 'Les workers',
             version => $self->version,
             content => $self->build_template('workers')
@@ -39,7 +39,7 @@ sub _get_workers {
 sub API_workers {
     my ($self) = @_;
     my $server = $self->server;
-    $server->get('/workers', sub { $self->_get_workers(@_) });
+    $server->get('/workers', sub { $self->_workers(@_) });
 }
 
 1;
