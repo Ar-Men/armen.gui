@@ -28,13 +28,13 @@
             <div id="dtNavMenu" class="navbar-menu">
                 <div class="navbar-start">
                     <a class="navbar-item[% $active eq 'S' ? ' is-active' : '' %]" href="/services">
-                        <span class="icon has-text-primary">
+                        <span class="icon has-text-black">
                             <i class="fas fa-server" aria-hidden="true"></i>
                         </span>
                         <span>Services</span>
                     </a>
                     <a class="navbar-item[% $active eq 'W' ? ' is-active' : '' %]" href="/workers">
-                        <span class="icon has-text-primary">
+                        <span class="icon has-text-black">
                             <i class="fas fa-cogs" aria-hidden="true"></i>
                         </span>
                         <span>Workers</span>
@@ -46,15 +46,26 @@
             </div>
         </div>
     </nav>
-    <div class="section main">
+    <section class="section main">
         <div class="container">
             <h1 class="title is-4">[% $title %]</h1>
             [% $content %]
         </div>
-    </div>
+    </section>
     <footer class="footer">
-        <p class="has-text-centered">Utopie v[% $version %] © 2018 losyme</p>
-        <p class="has-text-centered">Ar-Men</p>
+        <div class="container">
+            <div class="content has-text-centered">
+                <p>Utopie v[% $version %] © 2018 losyme</p>
+                <p>
+                    <a class="button" href="https://github.com/Ar-Men">
+                        <span class="icon">
+                            <i class="fab fa-github"></i>
+                        </span>
+                        <span>Ar-Men</span>
+                    </a>
+                </p>
+            </div>
+        </div>
     </footer>
 </body>
 </html>

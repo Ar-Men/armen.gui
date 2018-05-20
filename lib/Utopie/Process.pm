@@ -81,6 +81,14 @@ sub _build_version {
         exists $data->{version} ? $data->{version} : '0.0.0';
 }
 
+#md_### set_config_default()
+#md_
+sub set_config_default {
+    my ($self) = @_;
+    my $config = $self->config;
+    $config->set_default(heartbeat => 60); #TODO: une constante qqpart
+}
+
 #md_### _stop_loop()
 #md_
 sub _stop_loop { $_[0]->_cv_stop->send }

@@ -17,6 +17,10 @@ span.icon {
     margin-right: 5px;
 }
 
+.table .monospace {
+    font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter, monospace;
+}
+
 /*
 ####### END
 */
