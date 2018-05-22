@@ -25,10 +25,7 @@ use Utopie::Components::Server;
 use namespace::clean;
 
 extends qw(Obscur::Runner::Process);
-with qw(
-    Utopie::API::Role::Services
-    Utopie::API::Role::Workers
-);
+with map { "Utopie::API::Templates::$_" } qw(Services Workers);
 
 #md_## Les attributs
 #md_
@@ -89,6 +86,10 @@ sub set_config_default {
     $config->set_default(heartbeat => 60); #TODO: une constante qqpart
 }
 
+#md_### _API()
+#md_
+sub _API { $_[0]->$_ foreach map { "API_$_" } qw(services workers) }
+
 #md_### _stop_loop()
 #md_
 sub _stop_loop { $_[0]->_cv_stop->send }
@@ -145,10 +146,6 @@ sub build_template {
         params  => [template => $template, error => $Text::Template::ERROR, data => $data]
     });
 }
-
-#md_### _API()
-#md_
-sub _API { $_[0]->$_ foreach map { "API_$_" } qw(services workers) }
 
 1;
 __END__

@@ -7,13 +7,15 @@
 ##
 ####### Ecosystème basé sur les microservices ##################### (c) 2018 losyme ####### @(°_°)@
 
-package Utopie::API::Role::Workers;
+package Utopie::API::Templates::Workers;
 
-#md_# Utopie::API::Role::Workers
+#md_# Utopie::API::Templates::Workers
 #md_
 
 use Exclus::Exclus;
 use Moo::Role;
+
+with map { "Utopie::API::Ajax::Workers::$_" } qw(Default);
 
 #md_## Les méthodes
 #md_
@@ -38,6 +40,7 @@ sub _workers {
 #md_
 sub API_workers {
     my ($self) = @_;
+    $self->$_ foreach map { "API_workers_$_" } qw(default);
     my $server = $self->server;
     $server->get('/workers', sub { $self->_workers(@_) });
 }

@@ -24,14 +24,6 @@ extends qw(Obscur::Components::Server::Plugin::Twiggy);
 #md_## Les méthodes
 #md_
 
-#md_### _html_response()
-#md_
-sub _html_response {
-    my ($self, $rr, $cb, $params) = @_;
-    $cb->($rr);
-return;
-}
-
 #md_### _psgi_html()
 #md_
 sub _psgi_html {
@@ -42,7 +34,7 @@ sub _psgi_html {
     try {
         my ($cb, $params, $is_method_not_allowed, $allowed_methods) = $self->route_match($env);
         if ($cb) {
-            $later = $self->_html_response($rr, $cb, $params);
+            $cb->($rr, $params);
         }
         elsif ($is_method_not_allowed || $allowed_methods) {
             $rr->render_405($allowed_methods);
@@ -54,9 +46,9 @@ sub _psgi_html {
     catch {
         my $error = "$_";
         $self->logger->error($error);
-        $rr->render_500(     $error);
+        $rr->render_500($error);
     };
-    return $later ? $later : $rr->finalize;
+    return $rr->finalize;
 }
 
 #md_### build()
@@ -94,6 +86,16 @@ has 'env' => (
     is => 'ro', isa => HashRef, required => 1
 );
 
+#md_### ic_request
+#md_
+has 'ic_request' => (
+    is => 'ro',
+    isa => Bool,
+    lazy => 1,
+    default => sub { exists $_[0]->env->{HTTP_X_IC_REQUEST} },
+    init_arg => undef
+);
+
 #md_### _response
 #md_
 has '_response' => (
@@ -117,7 +119,13 @@ has '_debug' => (
 #md_
 sub BUILD {
     my $self = shift;
-    $self->logger->debug('Request', [%{$self->env}]) if $self->_debug;
+    if ($self->_debug) {
+        my $env = $self->env;
+        $self->logger->debug(
+            'Request',
+            [server => $env->{REMOTE_ADDR}, method => $env->{REQUEST_METHOD}, resource => $env->{PATH_INFO}]
+        );
+    }
 }
 
 #md_### render()

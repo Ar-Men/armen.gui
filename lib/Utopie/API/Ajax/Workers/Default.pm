@@ -1,4 +1,3 @@
-/*
 #######
 ##                                           _
 ##   ___ _______ _  ___ ___       ___ ___ __(_)
@@ -7,24 +6,21 @@
 ##                              /___/
 ##
 ####### Ecosystème basé sur les microservices ##################### (c) 2018 losyme ####### @(°_°)@
-*/
 
-.navbar .navbar-start > a.navbar-item.is-active {
-    background-color: hsl(0, 0%, 92%)
-}
+package Utopie::API::Ajax::Workers::Default;
 
-span.icon {
-    margin-right: 5px;
-}
+#md_# Utopie::API::Ajax::Workers::Default
+#md_
 
-.table .monospace {
-    font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter, monospace;
-}
+use Exclus::Exclus;
+use Moo::Role;
 
-.table .monospace .pointer {
-    cursor: pointer;
-}
+#md_## Les méthodes
+#md_
 
-/*
-####### END
-*/
+#md_### API_workers_default()
+#md_
+sub API_workers_default {}
+
+1;
+__END__
