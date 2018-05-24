@@ -24,9 +24,9 @@ extends qw(Obscur::Components::Server::Plugin::Twiggy);
 #md_## Les méthodes
 #md_
 
-#md_### _psgi_html()
+#md_### _psgi_gui()
 #md_
-sub _psgi_html {
+sub _psgi_gui {
     my ($self, $env) = @_;
     my $runner = $self->runner;
     my $rr = _Utopie::RequestResponse->new(runner => $runner, env => $env, debug => $self->debug);
@@ -58,7 +58,7 @@ sub build {
     $builder->mount('/static' => Plack::App::File->new(root => $self->runner->dir->child('gui/static'))->to_app);
     my $builder_middleware = Plack::Builder->new;
     $builder_middleware->add_middleware('Plack::Middleware::ContentLength');
-    $builder->mount('/' => $builder_middleware->wrap(sub { $self->_psgi_html(@_) }));
+    $builder->mount('/' => $builder_middleware->wrap(sub { $self->_psgi_gui(@_) }));
 }
 
 
