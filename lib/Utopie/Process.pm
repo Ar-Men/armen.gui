@@ -41,7 +41,7 @@ has '+server'      => (default => sub {
 #md_### port
 #md_
 has 'port' => (
-    is => 'rw', isa => Int, lazy => 1, default => sub { 59998 }
+    is => 'rw', isa => Int, lazy => 1, default => sub { 59997 }
 );
 
 #md_### _cv_stop
