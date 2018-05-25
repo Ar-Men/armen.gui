@@ -65,14 +65,14 @@ sub _heartbeat {
     my $elapsed = time - $time;
     if ($elapsed <= $heartbeat) {
         $html = <<HTML; ##..............................................................................................
-<td>$elapsed</td>
+<td>${elapsed}s</td>
 HTML
     }
     else {
         my $class = $elapsed > $heartbeat * 2 ? 'is-danger' : 'is-warning';
         $html = <<HTML; ##..............................................................................................
 <td>
-    <span class="tag $class">$elapsed</span>
+    <span class="tag $class">${elapsed}s</span>
 </td>
 HTML
     }
@@ -85,10 +85,10 @@ sub _uptime {
     my ($self, $time) = @_;
     my $data;
     my $uptime = time - $time;
-       if ($uptime >= 86400) { $data = sprintf("%dj", int($uptime/86400)) }
-    elsif ($uptime >=  3600) { $data = sprintf("%dh", int($uptime/ 3600)) }
-    elsif ($uptime >=    60) { $data = sprintf("%dm", int($uptime/   60)) }
-    else                     { $data = sprintf("%ds",           $uptime ) }
+       if ($uptime >= 86400) { $data = sprintf('%dd', int($uptime/86400)) }
+    elsif ($uptime >=  3600) { $data = sprintf('%dh', int($uptime/ 3600)) }
+    elsif ($uptime >=    60) { $data = sprintf('%dm', int($uptime/   60)) }
+    else                     { $data = sprintf('%ds',           $uptime ) }
     return <<HTML; ##...................................................................................................
 <td>$data</td>
 HTML
@@ -140,7 +140,7 @@ sub _services_registered {
             <th>DC</th>
             <th>Node</th>
             <th>Port</th>
-            <th>Heartbeat [s]</th>
+            <th>Heartbeat</th>
             <th>Uptime</th>
             <th>PID</th>
         </tr>
