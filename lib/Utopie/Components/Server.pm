@@ -28,9 +28,7 @@ extends qw(Obscur::Components::Server::Plugin::Twiggy);
 #md_
 sub _psgi_gui {
     my ($self, $env) = @_;
-    my $runner = $self->runner;
-    my $rr = _Utopie::RequestResponse->new(runner => $runner, env => $env, debug => $self->debug);
-    my $later;
+    my $rr = _Utopie::RequestResponse->new(runner => $self->runner, env => $env, debug => $self->debug);
     try {
         my ($cb, $params, $is_method_not_allowed, $allowed_methods) = $self->route_match($env);
         if ($cb) {
