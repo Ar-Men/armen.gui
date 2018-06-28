@@ -45,7 +45,8 @@ sub _status {
     state $_status = {
         running  => 'is-success',
         starting => 'is-primary',
-        stopping => 'is-info'
+        stopping => 'is-info',
+        STOPPING => 'is-info'
     };
     my ($self, $status) = @_;
     my $class = exists $_status->{$status} ? $_status->{$status} : 'is-dark';
