@@ -20,7 +20,7 @@ use Text::Template;
 use Types::Standard qw(InstanceOf Int Str);
 use YAML::XS qw(LoadFile);
 use Exclus::Exceptions;
-use Exclus::Util qw(build_path root_path);
+use Exclus::Util qw(build_path get_version root_path);
 use Utopie::Components::Server;
 use namespace::clean;
 
@@ -63,20 +63,11 @@ has '_templates' => (
 #md_### version
 #md_
 has 'version' => (
-    is => 'lazy', isa => Str, init_arg => undef
+    is => 'ro', isa => Str, lazy => 1, default => sub { get_version('armen.gui') }, init_arg => undef
 );
 
 #md_## Les méthodes
 #md_
-
-#md_### _build_version()
-#md_
-sub _build_version {
-    my $self = shift;
-    my $data = LoadFile(root_path(qw(armen.gui Version.yaml)));
-    return
-        exists $data->{version} ? $data->{version} : '0.0.0';
-}
 
 #md_### set_config_default()
 #md_
