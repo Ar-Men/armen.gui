@@ -16,11 +16,11 @@ use Exclus::Exclus;
 use EV;
 use AnyEvent;
 use Moo;
-use Path::Tiny;
 use Text::Template;
 use Types::Standard qw(InstanceOf Int Str);
 use YAML::XS qw(LoadFile);
 use Exclus::Exceptions;
+use Exclus::Util qw(build_path root_path);
 use Utopie::Components::Server;
 use namespace::clean;
 
@@ -54,9 +54,9 @@ has '_cv_stop' => (
 #md_
 has '_templates' => (
     is => 'ro',
-    isa => InstanceOf['Path::Tiny'],
+    isa => Str,
     lazy => 1,
-    default => sub { $_[0]->dir->child('gui/templates') },
+    default => sub { root_path(qw(armen.gui gui templates)) },
     init_arg => undef
 );
 
@@ -73,7 +73,7 @@ has 'version' => (
 #md_
 sub _build_version {
     my $self = shift;
-    my $data = LoadFile($self->dir->child('Version.yaml'));
+    my $data = LoadFile(root_path(qw(armen.gui Version.yaml)));
     return
         exists $data->{version} ? $data->{version} : '0.0.0';
 }
@@ -117,7 +117,7 @@ sub run {
 
 #md_### get_template_path()
 #md_
-sub get_template_path { shift->_templates->child($_[0].'.html') }
+sub get_template_path { build_path($_[0]->_templates, $_[1].'.html') }
 
 #md_### build_template()
 #md_

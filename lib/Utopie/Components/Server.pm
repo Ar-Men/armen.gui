@@ -17,6 +17,7 @@ use Moo;
 use Plack::App::File;
 use Plack::Builder;
 use Try::Tiny;
+use Exclus::Util qw(root_path);
 use namespace::clean;
 
 extends qw(Obscur::Components::Server::Plugin::Twiggy);
@@ -53,7 +54,7 @@ sub _psgi_gui {
 #md_
 sub build {
     my ($self, $builder) = @_;
-    $builder->mount('/static' => Plack::App::File->new(root => $self->runner->dir->child('gui/static'))->to_app);
+    $builder->mount('/static' => Plack::App::File->new(root => root_path(qw(armen.gui gui static)))->to_app);
     my $builder_middleware = Plack::Builder->new;
     $builder_middleware->add_middleware('Plack::Middleware::ContentLength');
     $builder->mount('/' => $builder_middleware->wrap(sub { $self->_psgi_gui(@_) }));
