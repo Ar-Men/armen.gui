@@ -17,7 +17,7 @@ use EV;
 use AnyEvent;
 use Moo;
 use Text::Template;
-use Types::Standard qw(InstanceOf Int Str);
+use Types::Standard -types;
 use YAML::XS qw(LoadFile);
 use Exclus::Exceptions;
 use Exclus::Util qw(build_path get_version root_path);

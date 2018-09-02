@@ -71,7 +71,7 @@ use HTML::Entities qw(encode_entities);
 use Moo;
 use Plack::Response;
 use Try::Tiny;
-use Types::Standard qw(Bool HashRef InstanceOf);
+use Types::Standard -types;
 use namespace::clean;
 
 extends qw(Obscur::Context);
